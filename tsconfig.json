@@ -1,18 +1,31 @@
 {
-  "extends": "./node_modules/@hollowverse/common/tsconfig.json",
   "compilerOptions": {
-    "target": "es2015",
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "target": "es5",
     "module": "commonjs",
-    "allowJs": false,
-    "checkJs": false,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "declaration": true
+    "noImplicitAny": true,
+    "declaration": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./typings"
+    ],
+    "skipLibCheck": true,
+    "types": [
+      "node"
+    ],
+    "lib": [
+      "es6",
+      "es2017.object"
+    ]
   },
   "exclude": [
-    "node_modules",
     "build",
+    "node_modules",
+    "__tests__"
   ]
 }

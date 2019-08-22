@@ -1,18 +1,20 @@
-import { Sanitizer } from './Sanitizer';
+import { Sanitizer } from './sanitazion/Sanitizer';
+import { getFromContainer } from './container';
 
-export * from './decorators';
-export * from './Sanitizer';
-export * from './SanitizerInterface';
-
-const sanitizer = new Sanitizer();
-
-// tslint:disable-next-line:no-default-export
-export default sanitizer;
+export * from './container';
+export * from './decorator/decorators';
+export * from './decorator/SanitizationOptions';
+export * from './sanitazion/SanitizationArguments';
+export * from './sanitazion/SanitizeTypes';
+export * from './sanitazion/Sanitizer';
+export * from './sanitazion/SanitizerConstraintInterface';
+export * from './sanitazion/SanitizerInterface';
+export * from './metadata/MetadataStorage';
 
 export function sanitize(object: any) {
-  sanitizer.sanitize(object);
+  getFromContainer(Sanitizer).sanitize(object);
 }
 
 export async function sanitizeAsync(object: any) {
-  await sanitizer.sanitizeAsync(object);
+  await getFromContainer(Sanitizer).sanitizeAsync(object);
 }

@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 import 'expect-more-jest';
-import { SanitizerInterface } from '../src/SanitizerInterface';
 
 describe('Sanitizer', () => {
   beforeEach(() => {
@@ -19,7 +18,8 @@ describe('Sanitizer', () => {
       NormalizeEmail,
       ToLowerCase,
       ToUpperCase,
-      sanitize,
+      ToString,
+      sanitize
     } = await import('../src/index');
 
     class A {
@@ -36,6 +36,10 @@ describe('Sanitizer', () => {
       @ToLowerCase() color1: string;
 
       @ToUpperCase() color2: string;
+
+      @ToString({ each: true })
+      @ToLowerCase({ each: true })
+      tags: string[];
     }
 
     const a = new A();
@@ -46,6 +50,7 @@ describe('Sanitizer', () => {
     a.isPremium = '1';
     a.color1 = '#fFf';
     a.color2 = '#FfF';
+    a.tags = ['AAA', 1 as any];
 
     sanitize(a);
 
@@ -58,15 +63,13 @@ describe('Sanitizer', () => {
     expect(a.isPremium).toBe(true);
     expect(a.color1).toMatch('#fff');
     expect(a.color2).toMatch('#FFF');
+    expect(a.tags).toEqual(['aaa', '1']);
   });
 
   test('Nested objects', async () => {
-    const {
-      Trim,
-      ToDate,
-      SanitizeNested,
-      sanitize,
-    } = await import('../src/index');
+    const { Trim, ToDate, SanitizeNested, sanitize } = await import(
+      '../src/index'
+      );
 
     class Tag {
       @Trim() name: string;
@@ -102,7 +105,7 @@ describe('Sanitizer', () => {
     const { Sanitize, SanitizerConstraint } = await import('../src/index');
 
     @SanitizerConstraint()
-    class LetterReplacer implements SanitizerInterface {
+    class LetterReplacer {
       sanitize(text: string): string {
         return text.replace(/o/g, 'w');
       }
@@ -123,13 +126,7 @@ describe('Sanitizer', () => {
   });
 
   test('Inheritance', async () => {
-    const {
-      sanitize,
-      ToInt,
-      Trim,
-      Blacklist,
-      Rtrim,
-    } = await import('../src/index');
+    const { sanitize, ToInt, Trim, Blacklist, Rtrim } = await import('../src/index');
 
     class BasePost {
       @ToInt() rating: any;
@@ -152,7 +149,7 @@ describe('Sanitizer', () => {
 
     expect(post1.title).toMatch('Hello world');
     expect(post1.text).toStartWith(
-      '. this is a great  post about hello  world',
+      '. this is a great  post about hello  world'
     );
     expect(post1.text).not.toEndWith('.');
     expect(post1.rating).toBe(12);
@@ -161,7 +158,7 @@ describe('Sanitizer', () => {
   /* Test for https://github.com/typestack/class-sanitizer/issues/8 */
   test(
     'Two classes that both have a property with the same name are ' +
-      'not confused when performing sanitization',
+    'not confused when performing sanitization',
     async () => {
       const { Trim, sanitize } = await import('../src/index');
 
@@ -184,6 +181,6 @@ describe('Sanitizer', () => {
 
       expect(a.text).toEndWith(' ');
       expect(b.text).not.toEndWith(' ');
-    },
+    }
   );
 });

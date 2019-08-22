@@ -1,18 +1,18 @@
-# `hollowverse/class-sanitizer` [![Build Status](https://travis-ci.org/hollowverse/class-sanitizer.svg?branch=master)](https://travis-ci.org/hollowverse/class-sanitizer)
+# neuralegion/class-sanitizer
 
 Allows to use decorator and non-decorator based sanitization in your Typescript classes.
 Internally uses [validator.js][1] to make sanitization.
 
 ## Installation
 
-`npm install @hollowverse/class-sanitizer --save`
+`npm install @neuralegion/class-sanitizer --save`
 
 ## Usage
 
 Create your class and put some sanity decorators on its properties you want to sanitize:
 
 ```typescript
-import { sanitize, Trim, Rtrim, Blacklist } from 'class-sanitizer';
+import { sanitize, Trim, Rtrim, Blacklist } from '@neuralegion/class-sanitizer';
 
 export class Post {
   @Trim() title: string;
@@ -42,7 +42,7 @@ If you have custom sanity logic you want to use as annotations you can do it thi
 1. First create a file, lets say `LetterReplacer.ts`, and create there a new class:
 
    ```typescript
-   import { SanitizerInterface, SanitizerConstraint } from 'class-sanitizer';
+   import { SanitizerInterface, SanitizerConstraint } from '@neuralegion/class-sanitizer';
 
    @SanitizerConstraint()
    export class LetterReplacer implements SanitizerInterface {
@@ -57,7 +57,7 @@ If you have custom sanity logic you want to use as annotations you can do it thi
 2. Then you can use your new sanitization constraint in your class:
 
    ```typescript
-   import { Sanitize } from 'class-sanitizer';
+   import { Sanitize } from '@neuralegion/class-sanitizer';
    import { LetterReplacer } from './LetterReplacer';
 
    export class Post {
@@ -70,7 +70,7 @@ If you have custom sanity logic you want to use as annotations you can do it thi
 3. Now you can use sanitizer as usual:
 
    ```typescript
-   import { sanitize } from 'class-sanitizer';
+   import { sanitize } from '@neuralegion/class-sanitizer';
 
    sanitize(post);
    ```
@@ -81,15 +81,15 @@ Sanitizer supports service container in the case if want to inject dependencies 
 classes. Here is example how to integrate it with [typedi][2]:
 
 ```typescript
-import { Container } from 'typedi';
-import { Sanitizer } from 'class-sanitizer';
+import {Container} from 'typedi';
+import {useContainer, Sanitizer} from '@neuralegion/class-sanitizer';
 
 // do this somewhere in the global application level:
+useContainer(Container);
 let sanitizer = Container.get(Sanitizer);
-sanitizer.container = Container;
 
-// now everywhere you can inject `Sanitizer` class which will go from the container
-// also you can inject classes using constructor injection into your custom sanitizers.
+// now everywhere you can inject Sanitizer class which will go from the container
+// also you can inject classes using constructor injection into your custom SanitizerConstraint-s
 ```
 
 ## Manual sanitization
@@ -97,7 +97,7 @@ sanitizer.container = Container;
 There are several methodw in the `Sanitizer` that allows to perform non-decorator based sanitization:
 
 ```typescript
-import Sanitizer from 'class-sanitizer';
+import Sanitizer from '@neuralegion/class-sanitizer';
 
 Sanitizer.blacklist(str, chars);
 Sanitizer.escape(str);
@@ -139,6 +139,8 @@ Sanitizer.toLowerCase(str);
 ## Examples
 
 Take a look at [the tests](./__tests__) for more examples of usages.
+
+## External links
 
 [1]: https://github.com/chriso/validator.js
 [2]: https://github.com/pleerock/typedi

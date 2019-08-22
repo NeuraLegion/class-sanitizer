@@ -1,16 +1,16 @@
-import { SanitizerInterface } from '../SanitizerInterface';
+import { SanitizerConstraintInterface } from '../sanitazion/SanitizerConstraintInterface';
+import { getFromContainer } from '../container';
 
-/**
- * This metadata interface contains information for custom sanitizers.
- */
-export interface ConstraintMetadata {
-  /**
-   * Object class which performs sanitization.
-   */
-  object: object;
+export class ConstraintMetadata {
+  target: Function;
+  name: string;
 
-  /**
-   * Instance of the object which performs sanitization.
-   */
-  instance?: SanitizerInterface;
+  constructor(target: Function, name?: string, async: boolean = false) {
+    this.target = target;
+    this.name = name;
+  }
+
+  get instance(): SanitizerConstraintInterface {
+    return getFromContainer<SanitizerConstraintInterface>(this.target);
+  }
 }

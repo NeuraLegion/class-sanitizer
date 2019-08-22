@@ -1,34 +1,42 @@
-import { SanitizationMetadata } from './metadata/SanitizationMetadata';
+import { SanitizationMetadata } from '../metadata/SanitizationMetadata';
 import { SanitizeTypes } from './SanitizeTypes';
-import { defaultMetadataStorage } from './metadata/MetadataStorage';
-import { SanitizerInterface } from './SanitizerInterface';
+import { MetadataStorage } from '../metadata/MetadataStorage';
 import * as validator from 'validator';
+import { getFromContainer } from '../container';
+import { ConstraintMetadata } from '../metadata/ConstraintMetadata';
+import { SanitizationArguments } from './SanitizationArguments';
+import { SanitizerConstraintInterface } from './SanitizerConstraintInterface';
 
 /**
  * Sanitizer performs sanitization of the given object based on its metadata.
  */
 export class Sanitizer {
-  private _container: { get(type: () => any): any };
-  private metadataStorage = defaultMetadataStorage;
-
-  set container(container: { get(type: () => any): any }) {
-    this._container = container;
-  }
+  private validatorJs = validator;
+  private metadataStorage = getFromContainer(MetadataStorage);
 
   /**
    * Performs sanitization of the given object based on annotations used in given object class.
    */
   sanitize(object: any) {
     this.metadataStorage
-      .getSanitizeMetadataForObject(object.constructor)
-      .filter(metadata => !!object[metadata.propertyName])
-      .forEach(
-        metadata =>
-          (object[metadata.propertyName] = this.sanitizeValue(
-            object[metadata.propertyName],
-            metadata,
-          )),
-      );
+      .getTargetSanitizationMetadata(object.constructor)
+      .filter((metadata) => !!object[metadata.propertyName])
+      .forEach((metadata) => {
+        const value = object[metadata.propertyName];
+        if (metadata.each) {
+          if (value instanceof Array) {
+            object[metadata.propertyName] = value.map((subValue: any) =>
+              this.sanitizeValue(subValue, object, metadata)
+            );
+          }
+        } else {
+          object[metadata.propertyName] = this.sanitizeValue(
+            value,
+            object,
+            metadata
+          );
+        }
+      });
   }
 
   /**
@@ -36,7 +44,7 @@ export class Sanitizer {
    * Performs in async-style, useful to use it in chained promises.
    */
   async sanitizeAsync<T>(object: T): Promise<T> {
-    return new Promise<T>(ok => {
+    return new Promise<T>((ok) => {
       this.sanitize(object);
       ok(object);
     });
@@ -51,35 +59,50 @@ export class Sanitizer {
    * escape some chars, e.g @Blacklist('\\[\\]')
    */
   blacklist(str: string, chars: RegExp | string): string {
-    return validator.blacklist(str, chars as string);
+    if (typeof str !== 'string') {
+      return str;
+    }
+    return this.validatorJs.blacklist(str, chars as string);
   }
 
   /**
    * Replace <, >, &, ', " and / with HTML entities.
    */
   escape(str: string): string {
-    return validator.escape(str);
+    if (typeof str !== 'string') {
+      return str;
+    }
+    return this.validatorJs.escape(str);
   }
 
   /**
    * Trim characters from the left-side of the input.
    */
   ltrim(str: string, chars?: string[]): string {
-    return validator.ltrim(str, chars ? chars.join() : undefined);
+    if (typeof str !== 'string') {
+      return str;
+    }
+    return this.validatorJs.ltrim(str, chars ? chars.join() : undefined);
   }
 
   /**
    * Canonicalize an email address.
    */
   normalizeEmail(str: string, lowercase?: boolean): string | false {
-    return validator.normalizeEmail(str, { lowercase });
+    if (typeof str !== 'string') {
+      return str;
+    }
+    return this.validatorJs.normalizeEmail(str, { lowercase });
   }
 
   /**
    * Trim characters from the right-side of the input.
    */
   rtrim(str: string, chars?: string[]): string {
-    return validator.rtrim(str, chars ? chars.join() : undefined);
+    if (typeof str !== 'string') {
+      return str;
+    }
+    return this.validatorJs.rtrim(str, chars ? chars.join() : undefined);
   }
 
   /**
@@ -88,7 +111,10 @@ export class Sanitizer {
    * Unicode-safe in JavaScript.
    */
   stripLow(str: string, keepNewLines?: boolean): string {
-    return validator.stripLow(str, keepNewLines);
+    if (typeof str !== 'string') {
+      return str;
+    }
+    return this.validatorJs.stripLow(str, keepNewLines);
   }
 
   /**
@@ -97,7 +123,7 @@ export class Sanitizer {
    */
   toBoolean(input: any, isStrict?: boolean): boolean {
     if (typeof input === 'string') {
-      return validator.toBoolean(input, isStrict);
+      return this.validatorJs.toBoolean(input, isStrict);
     }
 
     return !!input;
@@ -111,7 +137,7 @@ export class Sanitizer {
       return input;
     }
 
-    return validator.toDate(input);
+    return this.validatorJs.toDate(input);
   }
 
   /**
@@ -122,7 +148,7 @@ export class Sanitizer {
       return input;
     }
 
-    return validator.toFloat(input);
+    return this.validatorJs.toFloat(input);
   }
 
   /**
@@ -133,21 +159,24 @@ export class Sanitizer {
       return input;
     }
 
-    return validator.toInt(input, radix);
+    return this.validatorJs.toInt(input, radix);
   }
 
   /**
    * Convert the input to a string.
    */
   toString(input: any): string {
-    return validator.toString(input);
+    return this.validatorJs.toString(input);
   }
 
   /**
    * Trim characters (whitespace by default) from both sides of the input. You can specify chars that should be trimmed.
    */
   trim(str: string, chars?: string[]): string {
-    return validator.trim(str, chars ? chars.join() : undefined);
+    if (typeof str !== 'string') {
+      return str;
+    }
+    return this.validatorJs.trim(str, chars ? chars.join() : undefined);
   }
 
   /**
@@ -155,14 +184,23 @@ export class Sanitizer {
    * The characters are used in a RegExp and so you will need to escape some chars, e.g. whitelist(input, '\\[\\]').
    */
   whitelist(str: string, chars: RegExp | string): string {
-    return validator.whitelist(str, chars as string);
+    if (typeof str !== 'string') {
+      return str;
+    }
+    return this.validatorJs.whitelist(str, chars as string);
   }
 
   toUpperCase(str: string): string {
+    if (typeof str !== 'string') {
+      return str;
+    }
     return str.toUpperCase();
   }
 
   toLowerCase(str: string): string {
+    if (typeof str !== 'string') {
+      return str;
+    }
     return str.toLowerCase();
   }
 
@@ -170,41 +208,45 @@ export class Sanitizer {
   // Private Methods
   // -------------------------------------------------------------------------
 
-  private sanitizeValue(value: any, metadata: SanitizationMetadata): any {
+  private sanitizeValue(
+    value: any,
+    object: any,
+    metadata: SanitizationMetadata
+  ): any {
     switch (metadata.type) {
       case SanitizeTypes.BLACKLIST:
-        return this.blacklist(value, metadata.value1);
+        return this.blacklist(value, metadata.constraints[0]);
       case SanitizeTypes.ESCAPE:
         return this.escape(value);
       case SanitizeTypes.LTRIM:
-        return this.ltrim(value, metadata.value1);
+        return this.ltrim(value, metadata.constraints[0]);
       case SanitizeTypes.NORMALIZE_EMAIL:
-        return this.normalizeEmail(value, metadata.value1);
+        return this.normalizeEmail(value, metadata.constraints[0]);
       case SanitizeTypes.RTRIM:
-        return this.rtrim(value, metadata.value1);
+        return this.rtrim(value, metadata.constraints[0]);
       case SanitizeTypes.STRIP_LOW:
-        return this.stripLow(value, metadata.value1);
+        return this.stripLow(value, metadata.constraints[0]);
       case SanitizeTypes.TO_BOOLEAN:
-        return this.toBoolean(value, metadata.value1);
+        return this.toBoolean(value, metadata.constraints[0]);
       case SanitizeTypes.TO_DATE:
         return this.toDate(value);
       case SanitizeTypes.TO_FLOAT:
         return this.toFloat(value);
       case SanitizeTypes.TO_INT:
-        return this.toInt(value, metadata.value1);
+        return this.toInt(value, metadata.constraints[0]);
       case SanitizeTypes.TO_STRING:
         return this.toString(value);
       case SanitizeTypes.TRIM:
-        return this.trim(value, metadata.value1);
+        return this.trim(value, metadata.constraints[0]);
       case SanitizeTypes.WHITELIST:
-        return this.whitelist(value, metadata.value1);
+        return this.whitelist(value, metadata.constraints[0]);
       case SanitizeTypes.TO_LOWER_CASE:
         return this.toLowerCase(value);
       case SanitizeTypes.TO_UPPER_CASE:
         return this.toUpperCase(value);
       case SanitizeTypes.NESTED:
         if (Array.isArray(value)) {
-          value.forEach(obj => {
+          value.forEach((obj) => {
             this.sanitize(obj);
           });
         }
@@ -212,28 +254,35 @@ export class Sanitizer {
         return value;
       case SanitizeTypes.CUSTOM_SANITIZATION:
         return this.metadataStorage
-          .getSanitizeConstraintsForObject(metadata.value1)
-          .map(sanitizerMetadata => {
-            if (!sanitizerMetadata.instance) {
-              sanitizerMetadata.instance = this.createInstance(
-                sanitizerMetadata.object,
-              );
-            }
+          .getTargetSanitizationConstraints(metadata.constraintCls)
+          .map((sanitizerMetadata: ConstraintMetadata) => {
+            const sanitizationArgs: SanitizationArguments = {
+              value,
+              object,
+              targetName: object.constructor
+                ? (object.constructor as any).name
+                : undefined,
+              property: metadata.propertyName,
+              constraints: metadata.constraints
+            };
 
-            return sanitizerMetadata.instance;
+            return [sanitizerMetadata.instance, sanitizationArgs];
           })
-          .reduce((result, sanitizer) => sanitizer.sanitize(result), value);
+          .reduce(
+            (
+              result,
+              [sanitizer, sanitizationArgs]: [
+                SanitizerConstraintInterface,
+                SanitizationArguments
+              ]
+            ) => sanitizer.sanitize(result, sanitizationArgs),
+            value
+          );
 
       default:
         throw Error(
-          `Wrong sanitization type is supplied ${
-            metadata.type
-          } for value ${value}`,
+          `Wrong sanitization type is supplied ${metadata.type} for value ${value}`
         );
     }
-  }
-
-  private createInstance(Obj: any): SanitizerInterface {
-    return this._container ? this._container.get(Obj) : new Obj();
   }
 }
