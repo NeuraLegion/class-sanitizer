@@ -1,7 +1,20 @@
 # neuralegion/class-sanitizer
 
 Allows to use decorator and non-decorator based sanitization in your Typescript classes.
-Internally uses [validator.js][1] to make sanitization.
+Internally uses [validator.js](https://github.com/chriso/validator.js) to make sanitization.
+
+## Table of Contents
+
+ * [Installation](#installation)
+ * [Usage](#usage)
+    + [Sanitizing arrays](#sanitizing-arrays)
+    + [Sanitizing nested objects](#sanitizing-nested-objects)
+    + [Inheriting sanitization decorators](#inheriting-sanitization-decorators)
+    + [Custom sanitization classes](#custom-sanitization-classes)
+    + [Using service container](#using-service-container)
+    + [Manual sanitization](#manual-sanitization)
+    + [Sanitization decorators](#sanitization-decorators)
+ * [Examples](#examples)
 
 ## Installation
 
@@ -35,7 +48,76 @@ console.log(post);
 // }
 ```
 
-## Custom sanitization classes
+### Sanitizing arrays
+
+If your field is an array and you want to perform sanitization of each item in the array you must specify a
+special `each: true` decorator option:
+
+```typescript
+import {Escape} from '@neuralegion/class-sanitizer';
+
+export class Post {
+
+    @Escape({
+        each: true
+    })
+    tags: string[];
+}
+```
+
+This will sanitize each item in `post.tags` array.
+
+### Inheriting sanitization decorators
+
+When you define a subclass which extends from another one, the subclass will automatically inherit the parent's decorators. If a property is redefined in the descendant class decorators will be applied on it both from that and the base class.
+
+```typescript
+import {sanitize, Blacklist, NormalizeEmail, ToString, Escape} from '@neuralegion/class-sanitizer';
+
+class BaseContent {
+
+    @NormalizeEmail()
+    email: string;
+
+    @ToString()
+    password: string;
+}
+
+class User extends BaseContent {
+
+    @Escape()
+    name: string;
+
+    @Blacklist(/(1-9)/)
+    password: string;
+}
+
+let user = new User();
+
+user.email = 'example+1@example.com';  // inherited property
+user.password = 'password'; // password wil be perform not only ToString, but Blacklist as well
+user.name = 'Name <a href="/"></a>';
+
+sanitize(user)
+```
+
+### Sanitizing nested objects
+
+If your object contains nested objects and you want the sanitizer to perform their sanitization too, then you need to
+use the `@SanitizeNested()` decorator:
+
+```typescript
+import {SanitizeNested} from '@neuralegion/class-sanitizer';
+
+export class Post {
+
+    @SanitizeNested()
+    user: User;
+
+}
+```
+
+### Custom sanitization classes
 
 If you have custom sanity logic you want to use as annotations you can do it this way:
 
@@ -75,10 +157,10 @@ If you have custom sanity logic you want to use as annotations you can do it thi
    sanitize(post);
    ```
 
-## Using service container
+### Using service container
 
 Sanitizer supports service container in the case if want to inject dependencies into your custom sanity constraint
-classes. Here is example how to integrate it with [typedi][2]:
+classes. Here is example how to integrate it with [typedi](https://github.com/pleerock/typedi):
 
 ```typescript
 import {Container} from 'typedi';
@@ -92,9 +174,9 @@ let sanitizer = Container.get(Sanitizer);
 // also you can inject classes using constructor injection into your custom SanitizerConstraint-s
 ```
 
-## Manual sanitization
+### Manual sanitization
 
-There are several methodw in the `Sanitizer` that allows to perform non-decorator based sanitization:
+There are several methods in the `Sanitizer` that allows to perform non-decorator based sanitization:
 
 ```typescript
 import Sanitizer from '@neuralegion/class-sanitizer';
@@ -116,7 +198,7 @@ Sanitizer.toUpperCase(str);
 Sanitizer.toLowerCase(str);
 ```
 
-## Sanitization decorators
+### Sanitization decorators
 
 | Decorator                        | Description                                                                                                                                                              |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -139,8 +221,3 @@ Sanitizer.toLowerCase(str);
 ## Examples
 
 Take a look at [the tests](./__tests__) for more examples of usages.
-
-## External links
-
-[1]: https://github.com/chriso/validator.js
-[2]: https://github.com/pleerock/typedi
