@@ -1,7 +1,7 @@
 # neuralegion/class-sanitizer
 
 Allows to use decorator and non-decorator based sanitization in your Typescript classes.
-Internally uses [validator.js](https://github.com/chriso/validator.js) to make sanitization.
+Internally uses [validator.js](https://github.com/chriso/validator.js) and [Caja-HTML-Sanitizer](https://github.com/theSmaw/Caja-HTML-Sanitizer) to make sanitization.
 
 ## Table of Contents
 
