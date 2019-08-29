@@ -1,6 +1,7 @@
 # neuralegion/class-sanitizer
 
 ![npm](https://img.shields.io/npm/dm/@neuralegion/class-sanitizer?logo=npm)
+![CircleCI](https://img.shields.io/circleci/build/github/NeuraLegion/class-sanitizer?logo=circleci)
 
 Allows to use decorator and non-decorator based sanitization in your Typescript classes.
 Internally uses [validator.js](https://github.com/chriso/validator.js) and [Caja-HTML-Sanitizer](https://github.com/theSmaw/Caja-HTML-Sanitizer) to make sanitization.
