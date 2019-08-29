@@ -183,6 +183,7 @@ import Sanitizer from '@neuralegion/class-sanitizer';
 
 Sanitizer.blacklist(str, chars);
 Sanitizer.escape(str);
+Sanitizer.secure(str);
 Sanitizer.ltrim(str, chars);
 Sanitizer.normalizeEmail(str, isLowercase);
 Sanitizer.rtrim(str, chars);
@@ -204,6 +205,7 @@ Sanitizer.toLowerCase(str);
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `@Blacklist(chars: RegExp)`      | Remove characters that appear in the blacklist.                                                                                                                          |
 | `@Escape()`                      | Replace <, >, &, ', " and / with HTML entities.                                                                                                                          |
+| `@Secure()`                      | Strips unsafe tags and attributes from html.                                                                                                                          |
 | `@Ltrim()`                       | Trim characters from the left-side of the input.                                                                                                                         |
 | `@NormalizeEmail()`              | Canonicalize an email address.                                                                                                                                           |
 | `@Rtrim()`                       | Trim characters from the right-side of the input.                                                                                                                        |

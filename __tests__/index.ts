@@ -19,6 +19,7 @@ describe('Sanitizer', () => {
       ToLowerCase,
       ToUpperCase,
       ToString,
+      Secure,
       sanitize
     } = await import('../src/index');
 
@@ -26,6 +27,8 @@ describe('Sanitizer', () => {
       @Rtrim() text: string;
 
       @NormalizeEmail() email: string;
+
+      @Secure() widget: string;
 
       @Ltrim() bio: string;
 
@@ -45,6 +48,7 @@ describe('Sanitizer', () => {
     const a = new A();
     a.bio = ' abcdef';
     a.text = 'test ';
+    a.widget = '<b onmouseover=alert("XSS testing!")>Widget</b>';
     a.email = 'EXAMPLE+work@gmail.com';
     a.age = '18';
     a.isPremium = '1';
@@ -56,6 +60,7 @@ describe('Sanitizer', () => {
 
     expect(a.bio).not.toStartWith(' ');
     expect(a.text).not.toEndWith(' ');
+    expect(a.widget).toBe('<b>Widget</b>');
     expect(a.email).toBe('example@gmail.com');
     expect(a.age).toBeNumber();
     expect(a.age).toBe(18);

@@ -1,17 +1,31 @@
 import { SanitizationMetadata } from '../metadata/SanitizationMetadata';
 import { SanitizeTypes } from './SanitizeTypes';
 import { MetadataStorage } from '../metadata/MetadataStorage';
-import * as validator from 'validator';
+import {
+  blacklist,
+  escape,
+  normalizeEmail,
+  ltrim,
+  rtrim,
+  whitelist,
+  toBoolean,
+  toDate,
+  toFloat,
+  toInt,
+  toString,
+  stripLow,
+  trim
+} from 'validator';
 import { getFromContainer } from '../container';
 import { ConstraintMetadata } from '../metadata/ConstraintMetadata';
 import { SanitizationArguments } from './SanitizationArguments';
 import { SanitizerConstraintInterface } from './SanitizerConstraintInterface';
+import { sanitize as secure } from 'sanitizer';
 
 /**
  * Sanitizer performs sanitization of the given object based on its metadata.
  */
 export class Sanitizer {
-  private validatorJs = validator;
   private metadataStorage = getFromContainer(MetadataStorage);
 
   /**
@@ -50,9 +64,15 @@ export class Sanitizer {
     });
   }
 
-  // -------------------------------------------------------------------------
-  // sanitization Methods
-  // -------------------------------------------------------------------------
+  /**
+   * Strips unsafe tags and attributes from html.
+   */
+  secure(str: string): string {
+    if (typeof str !== 'string') {
+      return str;
+    }
+    return secure(str);
+  }
 
   /**
    * Remove characters that appear in the blacklist. The characters are used in a RegExp and so you will need to
@@ -62,7 +82,7 @@ export class Sanitizer {
     if (typeof str !== 'string') {
       return str;
     }
-    return this.validatorJs.blacklist(str, chars as string);
+    return blacklist(str, chars as string);
   }
 
   /**
@@ -72,7 +92,7 @@ export class Sanitizer {
     if (typeof str !== 'string') {
       return str;
     }
-    return this.validatorJs.escape(str);
+    return escape(str);
   }
 
   /**
@@ -82,7 +102,7 @@ export class Sanitizer {
     if (typeof str !== 'string') {
       return str;
     }
-    return this.validatorJs.ltrim(str, chars ? chars.join() : undefined);
+    return ltrim(str, chars ? chars.join() : undefined);
   }
 
   /**
@@ -92,7 +112,7 @@ export class Sanitizer {
     if (typeof str !== 'string') {
       return str;
     }
-    return this.validatorJs.normalizeEmail(str, { lowercase });
+    return normalizeEmail(str, { lowercase });
   }
 
   /**
@@ -102,7 +122,7 @@ export class Sanitizer {
     if (typeof str !== 'string') {
       return str;
     }
-    return this.validatorJs.rtrim(str, chars ? chars.join() : undefined);
+    return rtrim(str, chars ? chars.join() : undefined);
   }
 
   /**
@@ -114,7 +134,7 @@ export class Sanitizer {
     if (typeof str !== 'string') {
       return str;
     }
-    return this.validatorJs.stripLow(str, keepNewLines);
+    return stripLow(str, keepNewLines);
   }
 
   /**
@@ -123,7 +143,7 @@ export class Sanitizer {
    */
   toBoolean(input: any, isStrict?: boolean): boolean {
     if (typeof input === 'string') {
-      return this.validatorJs.toBoolean(input, isStrict);
+      return toBoolean(input, isStrict);
     }
 
     return !!input;
@@ -137,7 +157,7 @@ export class Sanitizer {
       return input;
     }
 
-    return this.validatorJs.toDate(input);
+    return toDate(input);
   }
 
   /**
@@ -148,7 +168,7 @@ export class Sanitizer {
       return input;
     }
 
-    return this.validatorJs.toFloat(input);
+    return toFloat(input);
   }
 
   /**
@@ -159,14 +179,14 @@ export class Sanitizer {
       return input;
     }
 
-    return this.validatorJs.toInt(input, radix);
+    return toInt(input, radix);
   }
 
   /**
    * Convert the input to a string.
    */
   toString(input: any): string {
-    return this.validatorJs.toString(input);
+    return toString(input);
   }
 
   /**
@@ -176,7 +196,7 @@ export class Sanitizer {
     if (typeof str !== 'string') {
       return str;
     }
-    return this.validatorJs.trim(str, chars ? chars.join() : undefined);
+    return trim(str, chars ? chars.join() : undefined);
   }
 
   /**
@@ -187,7 +207,7 @@ export class Sanitizer {
     if (typeof str !== 'string') {
       return str;
     }
-    return this.validatorJs.whitelist(str, chars as string);
+    return whitelist(str, chars as string);
   }
 
   toUpperCase(str: string): string {
@@ -218,6 +238,8 @@ export class Sanitizer {
         return this.blacklist(value, metadata.constraints[0]);
       case SanitizeTypes.ESCAPE:
         return this.escape(value);
+      case SanitizeTypes.SECURE:
+        return this.secure(value);
       case SanitizeTypes.LTRIM:
         return this.ltrim(value, metadata.constraints[0]);
       case SanitizeTypes.NORMALIZE_EMAIL:

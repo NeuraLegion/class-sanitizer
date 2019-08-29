@@ -107,6 +107,23 @@ export function Escape(annotationOptions?: SanitizationOptions) {
 }
 
 /**
+ * Strips unsafe tags and attributes from html.
+ */
+export function Secure(annotationOptions?: SanitizationOptions) {
+  return (object: object, propertyName: string) => {
+    const args = {
+      type: SanitizeTypes.SECURE,
+      target: object.constructor,
+      propertyName,
+      sanitizationOptions: annotationOptions
+    };
+    return getFromContainer(MetadataStorage).addSanitizationMetadata(
+      new SanitizationMetadata(args)
+    );
+  };
+}
+
+/**
  * Trim characters from the left-side of the input.
  */
 export function Ltrim(

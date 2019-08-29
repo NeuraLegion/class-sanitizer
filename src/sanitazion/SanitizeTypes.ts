@@ -4,6 +4,7 @@
 export enum SanitizeTypes {
   BLACKLIST = 'blacklist',
   ESCAPE = 'escape',
+  SECURE = 'secure',
   LTRIM = 'ltrim',
   NORMALIZE_EMAIL = 'normalizeEmail',
   RTRIM = 'rtrim',
