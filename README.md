@@ -8,6 +8,8 @@ Internally uses [validator.js](https://github.com/chriso/validator.js) to make s
  * [Installation](#installation)
  * [Usage](#usage)
     + [Sanitizing arrays](#sanitizing-arrays)
+    + [Sanitizing sets](#sanitizing-sets)
+    + [Sanitizing maps](#sanitizing-maps)
     + [Sanitizing nested objects](#sanitizing-nested-objects)
     + [Inheriting sanitization decorators](#inheriting-sanitization-decorators)
     + [Custom sanitization classes](#custom-sanitization-classes)
@@ -67,6 +69,60 @@ export class Post {
 
 This will sanitize each item in `post.tags` array.
 
+### Sanitizing sets
+
+If your field is an array and you want to perform sanitization of each item in the set you must specify a
+special `each: true` decorator option:
+
+```typescript
+import {Escape} from '@neuralegion/class-sanitizer';
+
+export class Post {
+
+    @Escape({
+        each: true
+    })
+    tags: Set<string>;
+}
+```
+
+This will sanitize each item in `post.tags` set.
+
+### Sanitizing maps
+
+If your field is an array and you want to perform sanitization of each item in the map you must specify a
+special `each: true` decorator option:
+
+```typescript
+import {Escape} from '@neuralegion/class-sanitizer';
+
+export class Post {
+
+    @Escape({
+        each: true
+    })
+    tags: Map<string, string>;
+}
+```
+
+This will sanitize each item in `post.tags` map.
+
+### Sanitizing nested objects
+
+If your object contains nested objects and you want the sanitizer to perform their sanitization too, then you need to
+use the `@SanitizeNested()` decorator:
+
+```typescript
+import {SanitizeNested} from '@neuralegion/class-sanitizer';
+
+export class Post {
+
+    @SanitizeNested()
+    user: User;
+
+}
+```
+
 ### Inheriting sanitization decorators
 
 When you define a subclass which extends from another one, the subclass will automatically inherit the parent's decorators. If a property is redefined in the descendant class decorators will be applied on it both from that and the base class.
@@ -99,22 +155,6 @@ user.password = 'password'; // password wil be perform not only ToString, but Bl
 user.name = 'Name <a href="/"></a>';
 
 sanitize(user)
-```
-
-### Sanitizing nested objects
-
-If your object contains nested objects and you want the sanitizer to perform their sanitization too, then you need to
-use the `@SanitizeNested()` decorator:
-
-```typescript
-import {SanitizeNested} from '@neuralegion/class-sanitizer';
-
-export class Post {
-
-    @SanitizeNested()
-    user: User;
-
-}
 ```
 
 ### Custom sanitization classes

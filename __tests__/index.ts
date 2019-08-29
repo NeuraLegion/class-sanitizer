@@ -72,7 +72,7 @@ describe('Sanitizer', () => {
   });
 
   test('Nested objects', async () => {
-    const { Trim, ToDate, SanitizeNested, sanitize } = await import(
+    const { Trim, ToDate, SanitizeNested, Secure, sanitize } = await import(
       '../src/index'
       );
 
@@ -82,11 +82,31 @@ describe('Sanitizer', () => {
       @ToDate() createdOn: string | Date;
     }
 
+    class Badge {
+      @Trim() name: string;
+
+      @Secure() url: string;
+    }
+
+    class Like {
+      @Trim() from: string;
+    }
+
     class Post {
       title: string;
 
       @SanitizeNested() tags: Tag[];
+
+      @SanitizeNested() badge: Badge;
+
+      @SanitizeNested() likes: Map<string, Like>;
     }
+
+    const like1 = new Like();
+    like1.from = 'me ';
+
+    const like2 = new Like();
+    like2.from = 'you';
 
     const tag1 = new Tag();
     tag1.name = 'ja';
@@ -95,15 +115,24 @@ describe('Sanitizer', () => {
     tag2.name = 'node.js ';
     tag2.createdOn = '2010-10-10';
 
+    const badge = new Badge();
+    badge.name = '100% ';
+    badge.url = 'https://example.com?default=<script>alert(document.cookie)</script>';
+
     const post1 = new Post();
     post1.title = 'Hello world';
     post1.tags = [tag1, tag2];
+    post1.badge = badge;
+    post1.likes = new Map<string, Like>([[like1.from, like1], [like2.from, like2]]);
 
     sanitize(post1);
 
     expect(post1.tags[1]).toBe(tag2);
     expect(tag2.name).not.toEndWith(' ');
     expect(tag2.createdOn).toBeInstanceOf(Date);
+    expect(like1.from).not.toEndWith(' ');
+    expect(badge.name).not.toEndWith(' ');
+    expect(badge.url).toBe('https://example.com?default=');
   });
 
   test('Custom sanitizer', async () => {

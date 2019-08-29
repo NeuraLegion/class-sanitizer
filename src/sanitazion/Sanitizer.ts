@@ -224,9 +224,19 @@ export class Sanitizer {
     return str.toLowerCase();
   }
 
-  // -------------------------------------------------------------------------
-  // Private Methods
-  // -------------------------------------------------------------------------
+  private nestedSanitization(value: any): any {
+    if (value instanceof Array) {
+      value.forEach((subValue: any) => this.sanitize(subValue));
+    } else if (value instanceof Set) {
+      value.forEach((subValue: any) => this.sanitize(subValue));
+    } else if (value instanceof Map) {
+      value.forEach((subValue, key) => this.sanitize(subValue));
+    } else if (value instanceof Object) {
+      this.sanitize(value);
+    }
+
+    return value;
+  }
 
   private sanitizeValue(
     value: any,
@@ -267,13 +277,7 @@ export class Sanitizer {
       case SanitizeTypes.TO_UPPER_CASE:
         return this.toUpperCase(value);
       case SanitizeTypes.NESTED:
-        if (Array.isArray(value)) {
-          value.forEach((obj) => {
-            this.sanitize(obj);
-          });
-        }
-
-        return value;
+        return this.nestedSanitization(value);
       case SanitizeTypes.CUSTOM_SANITIZATION:
         return this.metadataStorage
           .getTargetSanitizationConstraints(metadata.constraintCls)
