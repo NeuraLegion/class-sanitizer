@@ -107,11 +107,11 @@ export class Sanitizer {
   /**
    * Canonicalize an email address.
    */
-  normalizeEmail(str: string, lowercase?: boolean): string | false {
+  normalizeEmail(str: string, all_lowercase?: boolean): string | false {
     if (typeof str !== 'string') {
       return str;
     }
-    return normalizeEmail(str, { lowercase });
+    return normalizeEmail(str, { all_lowercase });
   }
 
   /**

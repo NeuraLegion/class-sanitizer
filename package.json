@@ -1,7 +1,7 @@
 {
   "name": "@neuralegion/class-sanitizer",
   "private": false,
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Class-based sanitization in TypeScript using decorators",
   "license": "Apache-2.0",
   "readmeFilename": "README.md",
