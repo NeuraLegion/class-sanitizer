@@ -12,7 +12,6 @@ import {
   toDate,
   toFloat,
   toInt,
-  toString,
   stripLow,
   trim
 } from 'validator';
@@ -186,7 +185,7 @@ export class Sanitizer {
    * Convert the input to a string.
    */
   toString(input: any): string {
-    return toString(input);
+    return String(input);
   }
 
   /**
