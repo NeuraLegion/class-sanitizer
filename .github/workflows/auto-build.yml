@@ -27,9 +27,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ inputs.cache }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ env.DEPENDENCIES_CACHE }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ inputs.cache }}-
+            ${{ env.DEPENDENCIES_CACHE }}-
 
       - name: Install deps in quiet mode
         run: npm ci -q
@@ -57,9 +57,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ inputs.cache }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ env.DEPENDENCIES_CACHE }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ inputs.cache }}-
+            ${{ env.DEPENDENCIES_CACHE }}-
 
       - name: Install deps in quiet mode
         run: npm ci -q
