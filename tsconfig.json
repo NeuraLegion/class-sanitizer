@@ -1,32 +1,31 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "./dist",
-    "baseUrl": "./src",
-    "target": "es5",
-    "module": "commonjs",
+    "newLine": "LF",
+    "sourceMap": true,
+    "declaration": false,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "downlevelIteration": true,
-    "sourceMap": true,
+    "esModuleInterop": true,
+    "strict": true,
     "noImplicitAny": true,
-    "declaration": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./typings"
-    ],
+    "noImplicitThis": true,
+    "noEmitOnError": true,
+    "noUnusedLocals": true,
+    "noFallthroughCasesInSwitch": true,
+    "useUnknownInCatchVariables": false,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "target": "es2019",
+    "lib": ["es2020"],
     "skipLibCheck": true,
-    "types": [
-      "node"
-    ],
-    "lib": [
-      "es6",
-      "es2017.object"
-    ]
+    "skipDefaultLibCheck": true,
+    "typeRoots": ["node_modules/@types", "typings"]
   },
-  "exclude": [
-    "build",
-    "node_modules",
-    "__tests__"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

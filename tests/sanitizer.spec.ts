@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import 'reflect-metadata';
 import 'expect-more-jest';
 
@@ -9,7 +10,7 @@ describe('Sanitizer', () => {
     jest.resetModules();
   });
 
-  test('Basic sanitization', async () => {
+  it('should perform basic sanitization', async () => {
     const {
       Rtrim,
       Ltrim,
@@ -21,28 +22,28 @@ describe('Sanitizer', () => {
       ToString,
       Secure,
       sanitize
-    } = await import('../src/index');
+    } = await import('../src');
 
     class A {
-      @Rtrim() text: string;
+      @Rtrim() public text!: string;
 
-      @NormalizeEmail() email: string;
+      @NormalizeEmail() public email!: string;
 
-      @Secure() widget: string;
+      @Secure() public widget!: string;
 
-      @Ltrim() bio: string;
+      @Ltrim() public bio!: string;
 
-      @ToInt() age: any;
+      @ToInt() public age!: any;
 
-      @ToBoolean() isPremium: any;
+      @ToBoolean() public isPremium!: any;
 
-      @ToLowerCase() color1: string;
+      @ToLowerCase() public color1!: string;
 
-      @ToUpperCase() color2: string;
+      @ToUpperCase() public color2!: string;
 
       @ToString({ each: true })
       @ToLowerCase({ each: true })
-      tags: string[];
+      public tags!: string[];
     }
 
     const a = new A();
@@ -71,35 +72,35 @@ describe('Sanitizer', () => {
     expect(a.tags).toEqual(['aaa', '1']);
   });
 
-  test('Nested objects', async () => {
+  it('should sanitize nested objects', async () => {
     const { Trim, ToDate, SanitizeNested, Secure, sanitize } = await import(
-      '../src/index'
-      );
+      '../src'
+    );
 
     class Tag {
-      @Trim() name: string;
+      @Trim() public name!: string;
 
-      @ToDate() createdOn: string | Date;
+      @ToDate() public createdOn!: string | Date;
     }
 
     class Badge {
-      @Trim() name: string;
+      @Trim() public name!: string;
 
-      @Secure() url: string;
+      @Secure() public url!: string;
     }
 
     class Like {
-      @Trim() from: string;
+      @Trim() public from!: string;
     }
 
     class Post {
-      title: string;
+      public title!: string;
 
-      @SanitizeNested() tags: Tag[];
+      @SanitizeNested() public tags!: Tag[];
 
-      @SanitizeNested() badge: Badge;
+      @SanitizeNested() public badge!: Badge;
 
-      @SanitizeNested() likes: Map<string, Like>;
+      @SanitizeNested() public likes!: Map<string, Like>;
     }
 
     const like1 = new Like();
@@ -117,13 +118,17 @@ describe('Sanitizer', () => {
 
     const badge = new Badge();
     badge.name = '100% ';
-    badge.url = 'https://example.com?default=<script>alert(document.cookie)</script>';
+    badge.url =
+      'https://example.com?default=<script>alert(document.cookie)</script>';
 
     const post1 = new Post();
     post1.title = 'Hello world';
     post1.tags = [tag1, tag2];
     post1.badge = badge;
-    post1.likes = new Map<string, Like>([[like1.from, like1], [like2.from, like2]]);
+    post1.likes = new Map<string, Like>([
+      [like1.from, like1],
+      [like2.from, like2]
+    ]);
 
     sanitize(post1);
 
@@ -135,20 +140,20 @@ describe('Sanitizer', () => {
     expect(badge.url).toBe('https://example.com?default=');
   });
 
-  test('Custom sanitizer', async () => {
-    const { Sanitize, SanitizerConstraint } = await import('../src/index');
+  it('should apply custom sanitizer', async () => {
+    const { Sanitize, SanitizerConstraint } = await import('../src');
 
     @SanitizerConstraint()
     class LetterReplacer {
-      sanitize(text: string): string {
+      public sanitize(text: string): string {
         return text.replace(/o/g, 'w');
       }
     }
 
-    const { sanitize } = await import('../src/index');
+    const { sanitize } = await import('../src');
 
     class Post {
-      @Sanitize(LetterReplacer) title: string;
+      @Sanitize(LetterReplacer) public title!: string;
     }
 
     const post1 = new Post();
@@ -159,19 +164,19 @@ describe('Sanitizer', () => {
     expect(post1.title).toMatch('Hellw wwrld');
   });
 
-  test('Inheritance', async () => {
-    const { sanitize, ToInt, Trim, Blacklist, Rtrim } = await import('../src/index');
+  it('should sanitize inherited objects', async () => {
+    const { sanitize, ToInt, Trim, Blacklist, Rtrim } = await import('../src');
 
     class BasePost {
-      @ToInt() rating: any;
+      @ToInt() public rating: any;
     }
 
     class Post extends BasePost {
-      @Trim() title: string;
+      @Trim() public title!: string;
 
       @Rtrim(['.'])
       @Blacklist(/(1-9)/)
-      text: string;
+      public text!: string;
     }
 
     const post1 = new Post();
@@ -190,31 +195,27 @@ describe('Sanitizer', () => {
   });
 
   /* Test for https://github.com/typestack/class-sanitizer/issues/8 */
-  test(
-    'Two classes that both have a property with the same name are ' +
-    'not confused when performing sanitization',
-    async () => {
-      const { Trim, sanitize } = await import('../src/index');
+  it('should ignore non-decorated classes that have a property with the same name', async () => {
+    const { Trim, sanitize } = await import('../src');
 
-      class A {
-        text: string;
-      }
-
-      class B {
-        @Trim() text: string;
-      }
-
-      const a = new A();
-      const b = new B();
-
-      a.text = 'space at the end ';
-      b.text = 'space at the end ';
-
-      sanitize(a);
-      sanitize(b);
-
-      expect(a.text).toEndWith(' ');
-      expect(b.text).not.toEndWith(' ');
+    class A {
+      public text!: string;
     }
-  );
+
+    class B {
+      @Trim() public text!: string;
+    }
+
+    const a = new A();
+    const b = new B();
+
+    a.text = 'space at the end ';
+    b.text = 'space at the end ';
+
+    sanitize(a);
+    sanitize(b);
+
+    expect(a.text).toEndWith(' ');
+    expect(b.text).not.toEndWith(' ');
+  });
 });

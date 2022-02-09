@@ -1,25 +1,25 @@
 # neuralegion/class-sanitizer
 
 ![npm](https://img.shields.io/npm/dm/@neuralegion/class-sanitizer?logo=npm)
-![CircleCI](https://img.shields.io/circleci/build/github/NeuraLegion/class-sanitizer?logo=circleci)
+![Build Status](https://github.com/NeuraLegion/class-sanitizer/actions/workflows/auto-build.yml/badge.svg?branch=master)
 
 Allows to use decorator and non-decorator based sanitization in your Typescript classes.
 Internally uses [validator.js](https://github.com/chriso/validator.js) and [Caja-HTML-Sanitizer](https://github.com/theSmaw/Caja-HTML-Sanitizer) to make sanitization.
 
 ## Table of Contents
 
- * [Installation](#installation)
- * [Usage](#usage)
-    + [Sanitizing arrays](#sanitizing-arrays)
-    + [Sanitizing sets](#sanitizing-sets)
-    + [Sanitizing maps](#sanitizing-maps)
-    + [Sanitizing nested objects](#sanitizing-nested-objects)
-    + [Inheriting sanitization decorators](#inheriting-sanitization-decorators)
-    + [Custom sanitization classes](#custom-sanitization-classes)
-    + [Using service container](#using-service-container)
-    + [Manual sanitization](#manual-sanitization)
-    + [Sanitization decorators](#sanitization-decorators)
- * [Examples](#examples)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Sanitizing arrays](#sanitizing-arrays)
+  - [Sanitizing sets](#sanitizing-sets)
+  - [Sanitizing maps](#sanitizing-maps)
+  - [Sanitizing nested objects](#sanitizing-nested-objects)
+  - [Inheriting sanitization decorators](#inheriting-sanitization-decorators)
+  - [Custom sanitization classes](#custom-sanitization-classes)
+  - [Using service container](#using-service-container)
+  - [Manual sanitization](#manual-sanitization)
+  - [Sanitization decorators](#sanitization-decorators)
+- [Examples](#examples)
 
 ## Installation
 
@@ -33,11 +33,12 @@ Create your class and put some sanity decorators on its properties you want to s
 import { sanitize, Trim, Rtrim, Blacklist } from '@neuralegion/class-sanitizer';
 
 export class Post {
-  @Trim() title: string;
+  @Trim()
+  public title!: string;
 
   @Rtrim(['.'])
   @Blacklist(/(1-9)/)
-  text: string;
+  public text!: string;
 }
 
 let post1 = new Post();
@@ -59,14 +60,13 @@ If your field is an array and you want to perform sanitization of each item in t
 special `each: true` decorator option:
 
 ```typescript
-import {Escape} from '@neuralegion/class-sanitizer';
+import { Escape } from '@neuralegion/class-sanitizer';
 
 export class Post {
-
-    @Escape({
-        each: true
-    })
-    tags: string[];
+  @Escape({
+    each: true
+  })
+  public tags!: string[];
 }
 ```
 
@@ -78,14 +78,13 @@ If your field is an array and you want to perform sanitization of each item in t
 special `each: true` decorator option:
 
 ```typescript
-import {Escape} from '@neuralegion/class-sanitizer';
+import { Escape } from '@neuralegion/class-sanitizer';
 
 export class Post {
-
-    @Escape({
-        each: true
-    })
-    tags: Set<string>;
+  @Escape({
+    each: true
+  })
+  public tags!: Set<string>;
 }
 ```
 
@@ -97,14 +96,13 @@ If your field is an array and you want to perform sanitization of each item in t
 special `each: true` decorator option:
 
 ```typescript
-import {Escape} from '@neuralegion/class-sanitizer';
+import { Escape } from '@neuralegion/class-sanitizer';
 
 export class Post {
-
-    @Escape({
-        each: true
-    })
-    tags: Map<string, string>;
+  @Escape({
+    each: true
+  })
+  public tags!: Map<string, string>;
 }
 ```
 
@@ -116,13 +114,11 @@ If your object contains nested objects and you want the sanitizer to perform the
 use the `@SanitizeNested()` decorator:
 
 ```typescript
-import {SanitizeNested} from '@neuralegion/class-sanitizer';
+import { SanitizeNested } from '@neuralegion/class-sanitizer';
 
 export class Post {
-
-    @SanitizeNested()
-    user: User;
-
+  @SanitizeNested()
+  public user!: User;
 }
 ```
 
@@ -131,33 +127,37 @@ export class Post {
 When you define a subclass which extends from another one, the subclass will automatically inherit the parent's decorators. If a property is redefined in the descendant class decorators will be applied on it both from that and the base class.
 
 ```typescript
-import {sanitize, Blacklist, NormalizeEmail, ToString, Escape} from '@neuralegion/class-sanitizer';
+import {
+  sanitize,
+  Blacklist,
+  NormalizeEmail,
+  ToString,
+  Escape
+} from '@neuralegion/class-sanitizer';
 
 class BaseContent {
+  @NormalizeEmail()
+  public email!: string;
 
-    @NormalizeEmail()
-    email: string;
-
-    @ToString()
-    password: string;
+  @ToString()
+  public password!: string;
 }
 
 class User extends BaseContent {
+  @Escape()
+  public name!: string;
 
-    @Escape()
-    name: string;
-
-    @Blacklist(/(1-9)/)
-    password: string;
+  @Blacklist(/(1-9)/)
+  public password!: string;
 }
 
 let user = new User();
 
-user.email = 'example+1@example.com';  // inherited property
+user.email = 'example+1@example.com'; // inherited property
 user.password = 'password'; // password wil be perform not only ToString, but Blacklist as well
 user.name = 'Name <a href="/"></a>';
 
-sanitize(user)
+sanitize(user);
 ```
 
 ### Custom sanitization classes
@@ -167,11 +167,14 @@ If you have custom sanity logic you want to use as annotations you can do it thi
 1. First create a file, lets say `LetterReplacer.ts`, and create there a new class:
 
    ```typescript
-   import { SanitizerInterface, SanitizerConstraint } from '@neuralegion/class-sanitizer';
+   import {
+     SanitizerInterface,
+     SanitizerConstraint
+   } from '@neuralegion/class-sanitizer';
 
    @SanitizerConstraint()
    export class LetterReplacer implements SanitizerInterface {
-     sanitize(text: string): string {
+     public sanitize(text: string): string {
        return text.replace(/o/g, 'w');
      }
    }
@@ -186,7 +189,8 @@ If you have custom sanity logic you want to use as annotations you can do it thi
    import { LetterReplacer } from './LetterReplacer';
 
    export class Post {
-     @Sanitize(LetterReplacer) title: string;
+     @Sanitize(LetterReplacer)
+     public title!: string;
    }
    ```
 
@@ -206,8 +210,8 @@ Sanitizer supports service container in the case if want to inject dependencies 
 classes. Here is example how to integrate it with [typedi](https://github.com/pleerock/typedi):
 
 ```typescript
-import {Container} from 'typedi';
-import {useContainer, Sanitizer} from '@neuralegion/class-sanitizer';
+import { Container } from 'typedi';
+import { useContainer, Sanitizer } from '@neuralegion/class-sanitizer';
 
 // do this somewhere in the global application level:
 useContainer(Container);
@@ -248,7 +252,7 @@ Sanitizer.toLowerCase(str);
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `@Blacklist(chars: RegExp)`      | Remove characters that appear in the blacklist.                                                                                                                          |
 | `@Escape()`                      | Replace <, >, &, ', " and / with HTML entities.                                                                                                                          |
-| `@Secure()`                      | Strips unsafe tags and attributes from html.                                                                                                                          |
+| `@Secure()`                      | Strips unsafe tags and attributes from html.                                                                                                                             |
 | `@Ltrim()`                       | Trim characters from the left-side of the input.                                                                                                                         |
 | `@NormalizeEmail()`              | Canonicalize an email address.                                                                                                                                           |
 | `@Rtrim()`                       | Trim characters from the right-side of the input.                                                                                                                        |
@@ -265,4 +269,4 @@ Sanitizer.toLowerCase(str);
 
 ## Examples
 
-Take a look at [the tests](./__tests__) for more examples of usages.
+Take a look at [the tests](./tests) for more examples of usages.

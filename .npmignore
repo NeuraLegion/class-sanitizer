@@ -1,6 +1,5 @@
 src
-__tests__
-tslint.json
-tsconfig.json
-.prettierrc
+tests
 .idea
+.husky
+.github

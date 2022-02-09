@@ -19,12 +19,12 @@ export enum SanitizeTypes {
   TO_LOWER_CASE = 'toLowerCase',
   TO_UPPER_CASE = 'toUpperCase',
   CUSTOM_SANITIZATION = 'customSanitization',
-  NESTED = 'nestedSanitization',
+  NESTED = 'nestedSanitization'
 }
 
-// tslint:disable-next-line:no-namespace
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace SanitizeTypes {
   export function isValid(type: SanitizeTypes | string) {
-    return Object.values(SanitizeTypes).some((value) => value === type);
+    return Object.values(SanitizeTypes).some(value => value === type);
   }
 }
