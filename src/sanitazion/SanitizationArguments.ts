@@ -1,5 +1,4 @@
 export interface SanitizationArguments {
-
   /**
    * Sanitizing value.
    */
@@ -18,11 +17,10 @@ export interface SanitizationArguments {
   /**
    * Object that is being sanitized.
    */
-  object: Object;
+  object: any;
 
   /**
    * Name of the object's property being sanitized.
    */
   property: string;
-
 }
