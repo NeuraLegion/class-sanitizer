@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { MetadataStorage } from '../metadata/MetadataStorage';
 import { SanitizeTypes } from '../sanitazion/SanitizeTypes';
 import { SanitizationOptions } from './SanitizationOptions';
 import { getFromContainer } from '../container';
 import { ConstraintMetadata } from '../metadata/ConstraintMetadata';
 import { SanitizationMetadata } from '../metadata/SanitizationMetadata';
-
-// tslint:disable function-name
 
 /**
  * Decorator used to register custom sanitizer.
@@ -21,7 +20,7 @@ export function SanitizerConstraint(options?: {
       name = name
         .replace(
           /\.?([A-Z]+)/g,
-          (x: string, y: string) => '_' + y.toLowerCase()
+          (_: string, y: string) => '_' + y.toLowerCase()
         )
         .replace(/^_/, '');
     }
@@ -61,6 +60,7 @@ export function Sanitize(
         ? (constraintsOrSanitizationOptions as SanitizationOptions)
         : maybeSanitizationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -83,6 +83,7 @@ export function Blacklist(
       constraints: [chars],
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -100,6 +101,7 @@ export function Escape(annotationOptions?: SanitizationOptions) {
       propertyName,
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -117,6 +119,7 @@ export function Secure(annotationOptions?: SanitizationOptions) {
       propertyName,
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -138,6 +141,7 @@ export function Ltrim(
       constraints: [chars],
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -159,6 +163,7 @@ export function NormalizeEmail(
       constraints: [lowercase],
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -180,6 +185,7 @@ export function Rtrim(
       constraints: [chars],
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -203,6 +209,7 @@ export function StripLow(
       constraints: [keepNewLines],
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -225,6 +232,7 @@ export function ToBoolean(
       constraints: [isStrict],
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -242,6 +250,7 @@ export function ToDate(annotationOptions?: SanitizationOptions) {
       propertyName,
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -259,6 +268,7 @@ export function ToFloat(annotationOptions?: SanitizationOptions) {
       propertyName,
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -277,6 +287,7 @@ export function ToInt(radix?: number, annotationOptions?: SanitizationOptions) {
       constraints: [radix],
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -294,6 +305,7 @@ export function ToString(annotationOptions?: SanitizationOptions) {
       propertyName,
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -315,6 +327,7 @@ export function Trim(
       constraints: [chars],
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -337,6 +350,7 @@ export function Whitelist(
       constraints: [chars],
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -351,6 +365,7 @@ export function ToLowerCase(annotationOptions?: SanitizationOptions) {
       propertyName,
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -365,6 +380,7 @@ export function ToUpperCase(annotationOptions?: SanitizationOptions) {
       propertyName,
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
@@ -382,6 +398,7 @@ export function SanitizeNested(annotationOptions?: SanitizationOptions) {
       propertyName,
       sanitizationOptions: annotationOptions
     };
+
     return getFromContainer(MetadataStorage).addSanitizationMetadata(
       new SanitizationMetadata(args)
     );
