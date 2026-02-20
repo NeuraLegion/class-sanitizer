@@ -24,7 +24,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Cache npm modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ env.DEPENDENCIES_CACHE }}-${{ hashFiles('**/package-lock.json') }}
@@ -54,7 +54,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Cache npm modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ env.DEPENDENCIES_CACHE }}-${{ hashFiles('**/package-lock.json') }}
