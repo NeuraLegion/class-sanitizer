@@ -2,7 +2,6 @@
   "name": "@neuralegion/class-sanitizer",
   "private": false,
   "version": "0.0.0",
-  "type": "module",
   "description": "Class-based sanitization in TypeScript using decorators",
   "license": "Apache-2.0",
   "readmeFilename": "README.md",
@@ -10,6 +9,7 @@
     "name": "Artem Derevnjuk",
     "email": "artem.derevnjuk@neuralegion.com"
   },
+  "type": "module",
   "main": "./dist/index.js",
   "files": [
     "dist"
@@ -63,7 +63,7 @@
   "devDependencies": {
     "@commitlint/cli": "^20.4.2",
     "@commitlint/config-conventional": "^19.2.0",
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.39.2",
     "@types/jest": "^29.5.0",
     "@types/node": "^24.10.7",
     "@types/sanitizer": "0.0.28",
@@ -71,9 +71,12 @@
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "del-cli": "^7.0.0",
-    "eslint": "^10.0.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-jest": "^29.15.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-import-x": "^4.16.1",
+    "eslint-plugin-jest": "^28.0.0",
     "expect-more-jest": "^5.4.0",
     "globals": "^17.3.0",
     "husky": "^9.0.0",

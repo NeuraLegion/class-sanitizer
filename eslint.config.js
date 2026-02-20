@@ -4,6 +4,8 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import jestPlugin from 'eslint-plugin-jest';
 import prettier from 'eslint-config-prettier';
+import importX from 'eslint-plugin-import-x';
+
 export default defineConfig([
   {
     ignores: ['tmp', 'node_modules', 'dist']
@@ -41,7 +43,8 @@ export default defineConfig([
       }
     },
     plugins: {
-      '@typescript-eslint': tseslint.plugin
+      '@typescript-eslint': tseslint.plugin,
+      'import-x': importX
     },
     settings: {
       'import/parsers': {
@@ -216,7 +219,8 @@ export default defineConfig([
   {
     files: ['**/*.spec.ts', '**/*.spec.tsx', 'tests/**/*.ts'],
     plugins: {
-      jest: jestPlugin
+      'jest': jestPlugin,
+      'import-x': importX
     },
     languageOptions: {
       globals: {
