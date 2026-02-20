@@ -18,7 +18,6 @@
     "useUnknownInCatchVariables": false,
     "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true,
-    "suppressImplicitAnyIndexErrors": true,
     "importHelpers": true,
     "module": "commonjs",
     "target": "es2019",
