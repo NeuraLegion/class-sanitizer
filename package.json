@@ -63,7 +63,7 @@
     "@commitlint/cli": "^20.4.2",
     "@commitlint/config-conventional": "^19.2.0",
     "@types/jest": "^29.5.0",
-    "@types/node": "~22.0.0",
+    "@types/node": "^24.10.7",
     "@types/sanitizer": "0.0.28",
     "@types/validator": "^13.7.1",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
@@ -98,6 +98,6 @@
     "prepare": "is-ci || husky install"
   },
   "engines": {
-    "node": ">=22.14"
+    "node": ">=24.0.0"
   }
 }
