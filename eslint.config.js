@@ -1,35 +1,37 @@
-const { FlatCompat } = require('@eslint/eslintrc');
-const js = require('@eslint/js');
-const typescriptEslint = require('@typescript-eslint/eslint-plugin');
-const typescriptParser = require('@typescript-eslint/parser');
-const importX = require('eslint-plugin-import-x');
-const jestPlugin = require('eslint-plugin-jest');
-const path = require('path');
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended
-});
-
-module.exports = [
+import { defineConfig } from 'eslint/config';
+import js from '@eslint/js';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+import jestPlugin from 'eslint-plugin-jest';
+import prettier from 'eslint-config-prettier';
+export default defineConfig([
   {
-    ignores: [
-      'tmp/**',
-      'node_modules/**',
-      'dist/**',
-      '**/*.js',
-      '!eslint.config.js'
-    ]
+    ignores: ['tmp', 'node_modules', 'dist']
   },
   js.configs.recommended,
-  ...compat.extends('prettier'),
+  prettier,
+  // -------------------------
+  // Base JS environment
+  // -------------------------
+  {
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        ...globals.es2024
+      }
+    }
+  },
+  // -------------------------
+  // TypeScript
+  // -------------------------
+  ...tseslint.configs.recommended,
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      parser: typescriptParser,
+      parser: tseslint.parser,
       parserOptions: {
-        project: './tsconfig.json',
-        ecmaVersion: 2020,
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
         sourceType: 'module'
       },
       globals: {
@@ -39,23 +41,17 @@ module.exports = [
       }
     },
     plugins: {
-      '@typescript-eslint': typescriptEslint,
-      'import-x': importX,
-      'jest': jestPlugin
+      '@typescript-eslint': tseslint.plugin
     },
     settings: {
-      'import-x/parsers': {
+      'import/parsers': {
         '@typescript-eslint/parser': ['.ts', '.tsx']
       },
-      'import-x/resolver': {
-        typescript: {
-          project: 'tsconfig.json'
-        }
+      'import/resolver': {
+        typescript: true
       }
     },
     rules: {
-      ...typescriptEslint.configs['recommended'].rules,
-      '@typescript-eslint/ban-types': 'off',
       '@typescript-eslint/explicit-member-accessibility': [
         'error',
         {
@@ -119,8 +115,8 @@ module.exports = [
         },
         {
           selector: 'method',
-          format: ['camelCase', 'PascalCase'],
-          modifiers: ['static']
+          modifiers: ['static'],
+          format: ['camelCase', 'PascalCase']
         },
         {
           selector: 'property',
@@ -135,12 +131,9 @@ module.exports = [
       ],
       '@typescript-eslint/no-inferrable-types': [
         'error',
-        {
-          ignoreParameters: true,
-          ignoreProperties: true
-        }
+        { ignoreParameters: true, ignoreProperties: true }
       ],
-      '@typescript-eslint/default-param-last': ['error'],
+      '@typescript-eslint/default-param-last': 'error',
       '@typescript-eslint/consistent-type-assertions': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/unified-signatures': 'error',
@@ -155,22 +148,12 @@ module.exports = [
           variableDeclarationIgnoreFunction: true
         }
       ],
-      '@typescript-eslint/no-shadow': [
-        'error',
-        {
-          hoist: 'all'
-        }
-      ],
-      'arrow-body-style': 'error',
-      'camelcase': 'off',
+      '@typescript-eslint/no-shadow': ['error', { hoist: 'all' }],
       'no-redeclare': 'off',
       '@typescript-eslint/no-redeclare': 'error',
-      'complexity': [
-        'error',
-        {
-          max: 10
-        }
-      ],
+      'arrow-body-style': 'error',
+      'camelcase': 'off',
+      'complexity': ['error', { max: 10 }],
       'eqeqeq': ['error', 'smart'],
       'guard-for-in': 'error',
       'import-x/no-self-import': 'error',
@@ -203,12 +186,7 @@ module.exports = [
         }
       ],
       'max-classes-per-file': ['error', 1],
-      'max-depth': [
-        'error',
-        {
-          max: 2
-        }
-      ],
+      'max-depth': ['error', { max: 2 }],
       'default-param-last': 'off',
       'no-bitwise': 'error',
       'no-caller': 'error',
@@ -221,11 +199,7 @@ module.exports = [
       'one-var': ['error', 'never'],
       'padding-line-between-statements': [
         'error',
-        {
-          blankLine: 'always',
-          next: 'return',
-          prev: '*'
-        }
+        { blankLine: 'always', prev: '*', next: 'return' }
       ],
       'prefer-arrow-callback': 'error',
       'prefer-const': 'error',
@@ -236,6 +210,9 @@ module.exports = [
       'radix': 'error'
     }
   },
+  // -------------------------
+  // Jest tests
+  // -------------------------
   {
     files: ['**/*.spec.ts', '**/*.spec.tsx', 'tests/**/*.ts'],
     plugins: {
@@ -243,14 +220,7 @@ module.exports = [
     },
     languageOptions: {
       globals: {
-        ...Object.fromEntries(
-          Object.entries(jestPlugin.environments.globals.globals).map(
-            ([key, value]) => [
-              key,
-              value === 'readonly' ? 'readonly' : 'writable'
-            ]
-          )
-        )
+        ...globals.jest
       }
     },
     rules: {
@@ -265,4 +235,4 @@ module.exports = [
       ]
     }
   }
-];
+]);
