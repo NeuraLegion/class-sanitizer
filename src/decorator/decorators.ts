@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { MetadataStorage } from '../metadata/MetadataStorage';
 import { SanitizeTypes } from '../sanitazion/SanitizeTypes';
 import { SanitizationOptions } from './SanitizationOptions';
