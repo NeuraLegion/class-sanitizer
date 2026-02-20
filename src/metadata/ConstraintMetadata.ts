@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { SanitizerConstraintInterface } from '../sanitazion/SanitizerConstraintInterface';
 import { getFromContainer } from '../container';
 
