@@ -9,7 +9,6 @@
     "name": "Artem Derevnjuk",
     "email": "artem.derevnjuk@neuralegion.com"
   },
-  "type": "module",
   "main": "./dist/index.js",
   "files": [
     "dist"
@@ -102,6 +101,6 @@
     "prepare": "is-ci || husky install"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=24"
   }
 }
